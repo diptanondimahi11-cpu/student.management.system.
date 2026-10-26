@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <!-- Auth View (Login Page) -->
+    <div id="authView" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-full mb-3 shadow-lg">
+                    <i class="fa-solid fa-user-graduate text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Student Portal Log In</h2>
+                <p class="text-gray-500 text-sm mt-1">Software Engineering Project</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Username / Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <input type="text" id="username" value="admin" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="admin">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="password" value="admin123" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100 text-center">
+                    Default Admin: <strong>admin</strong> | Password: <strong>admin123</strong>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow-md transition duration-200">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard View -->
+    <div id="dashboardView" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-slate-900 text-white flex-shrink-0">
+            <div class="p-6 flex items-center gap-3 border-b border-slate-800">
+                <i class="fa-solid fa-graduation-cap text-2xl text-blue-400"></i>
+                <span class="font-bold text-lg tracking-wide">EduManager</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <button onclick="switchTab('overview')" id="nav-overview" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <button onclick="switchTab('students')" id="nav-students" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-users w-5"></i> Students
+                </button>
+                <button onclick="switchTab('courses')" id="nav-courses" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-book-open w-5"></i> Courses
+                </button>
+                <button onclick="switchTab('attendance')" id="nav-attendance" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-calendar-check w-5"></i> Attendance
+                </button>
+                <button onclick="switchTab('results')" id="nav-results" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-award w-5"></i> Results
+                </button>
+            </nav>
+            <div class="p-4 border-t border-slate-800 mt-auto">
+                <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-right-from-bracket w-5"></i> Log Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0 bg-gray-50">
+            <!-- Top Navbar -->
+            <header class="bg-white border-b px-6 py-4 flex items-center justify-between shadow-sm">
+                <h1 id="pageTitle" class="text-xl font-bold text-gray-800">Dashboard</h1>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-gray-600">Admin User</span>
+                    <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">A</div>
+                </div>
+            </header>
+
+            <!-- Dynamic Section Contents -->
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                
+                <!-- Overview / Dashboard -->
+                <section id="sec-overview" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
+                            <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-users text-2xl"></i></div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Total Students</p>
+                                <p id="statTotalStudents" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
+                            <div class="p-3 bg-indigo-100 text-indigo-600 rounded-lg"><i class="fa-solid fa-book text-2xl"></i></div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Courses</p>
+                                <p id="statTotalCourses" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
+                            <div class="p-3 bg-green-100 text-green-600 rounded-lg"><i class="fa-solid fa-clipboard-user text-2xl"></i></div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Avg. Attendance</p>
+                                <p id="statAvgAttendance" class="text-2xl font-bold text-gray-800">0%</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
+                            <div class="p-3 bg-amber-100 text-amber-600 rounded-lg"><i class="fa-solid fa-star text-2xl"></i></div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Avg. GPA</p>
+                                <p id="statAvgGPA" class="text-2xl font-bold text-gray-800">0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="font-bold text-gray-800 mb-4">Quick Overview</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Welcome to the Student Management System. Use the navigation sidebar to manage student records, course enrollments, track daily attendance, and enter grading metrics. All changes are saved automatically in local client storage.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Students Section -->
+                <section id="sec-students" class="hidden space-y-6">
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border">
+                        <input type="text" id="searchStudent" oninput="renderStudents()" placeholder="Search student by name or ID..." class="px-4 py-2 border rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="openStudentModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Student
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-gray-50 border-b text-gray-600 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4">Student ID</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Email</th>
+                                    <th class="p-4">Department</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable" class="divide-y text-gray-700"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Courses Section -->
+                <section id="sec-courses" class="hidden space-y-6">
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-700">Available Courses</h3>
+                        <button onclick="openCourseModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Course
+                        </button>
+                    </div>
+
+                    <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                </section>
+
+                <!-- Attendance Section -->
+                <section id="sec-attendance" class="hidden space-y-6">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border flex items-center gap-4">
+                        <label class="text-sm font-semibold text-gray-700">Select Date:</label>
+                        <input type="date" id="attendanceDate" class="border p-2 rounded-lg text-sm focus:outline-none">
+                        <button onclick="saveAttendance()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg ml-auto">
+                            <i class="fa-solid fa-save mr-1"></i> Save Attendance
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-gray-50 border-b text-gray-600 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4">Student ID</th>
+                                    <th class="p-4">Student Name</th>
+                                    <th class="p-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTable" class="divide-y text-gray-700"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section id="sec-results" class="hidden space-y-6">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-gray-700">Grade & Result Entry</h3>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-gray-50 border-b text-gray-600 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4">Student ID</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Course Marks (0-100)</th>
+                                    <th class="p-4">GPA</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTable" class="divide-y text-gray-700"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Student Modal -->
+    <div id="studentModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+            <h3 id="studentModalTitle" class="text-lg font-bold text-gray-800">Add New Student</h3>
+            <form id="studentForm" onsubmit="handleStudentSubmit(event)" class="space-y-3">
+                <input type="hidden" id="studentEditIndex">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Student ID</label>
+                    <input type="text" id="sId" required class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
+                    <input type="text" id="sName" required class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                    <input type="email" id="sEmail" required class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Department</label>
+                    <input type="text" id="sDept" required class="w-full p-2 border rounded-lg text-sm" placeholder="Computer Science">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeStudentModal()" class="px-4 py-2 border rounded-lg text-sm text-gray-600">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Database Initialization
+        const defaultData = {
+            students: [
+                { id: "CSE-001", name: "Alex Morgan", email: "alex@university.edu", dept: "CSE", marks: 85, attendance: {} },
+                { id: "CSE-002", name: "John Doe", email: "john@university.edu", dept: "CSE", marks: 72, attendance: {} }
+            ],
+            courses: [
+                { code: "CSE-3631", title: "Software Engineering", credits: 3 },
+                { code: "CSE-3632", title: "Database Systems", credits: 3 }
+            ]
+        };
+
+        let db = JSON.parse(localStorage.getItem('sms_db')) || defaultData;
+
+        function saveDb() {
+            localStorage.setItem('sms_db', JSON.stringify(db));
+            updateStats();
+        }
+
+        // Authentication Logic
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+
+            if (u === 'admin' && p === 'admin123') {
+                document.getElementById('authView').classList.add('hidden');
+                document.getElementById('dashboardView').classList.remove('hidden');
+                switchTab('overview');
+            } else {
+                alert('Invalid Credentials! Use admin / admin123');
+            }
+        });
+
+        function logout() {
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('authView').classList.remove('hidden');
+        }
+
+        // Navigation Tabs
+        function switchTab(tab) {
+            const sections = ['overview', 'students', 'courses', 'attendance', 'results'];
+            sections.forEach(s => {
+                document.getElementById(`sec-${s}`).classList.add('hidden');
+                document.getElementById(`nav-${s}`).classList.remove('bg-slate-800', 'text-white');
+            });
+
+            document.getElementById(`sec-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).classList.add('bg-slate-800', 'text-white');
+            document.getElementById('pageTitle').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+
+            if (tab === 'students') renderStudents();
+            if (tab === 'courses') renderCourses();
+            if (tab === 'attendance') renderAttendance();
+            if (tab === 'results') renderResults();
+            if (tab === 'overview') updateStats();
+        }
+
+        // Dashboard Stats
+        function updateStats() {
+            document.getElementById('statTotalStudents').innerText = db.students.length;
+            document.getElementById('statTotalCourses').innerText = db.courses.length;
+
+            let totalMarks = 0;
+            db.students.forEach(s => totalMarks += (s.marks || 0));
+            const avgMarks = db.students.length ? (totalMarks / db.students.length) : 0;
+            const gpa = (avgMarks / 20).toFixed(2);
+            document.getElementById('statAvgGPA').innerText = gpa;
+            document.getElementById('statAvgAttendance').innerText = "88%";
+        }
+
+        // Student Management (CRUD)
+        function renderStudents() {
+            const tbody = document.getElementById('studentsTable');
+            const query = document.getElementById('searchStudent').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            db.students
+                .filter(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query))
+                .forEach((s, idx) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-semibold">${s.id}</td>
+                            <td class="p-4">${s.name}</td>
+                            <td class="p-4 text-gray-500">${s.email}</td>
+                            <td class="p-4">${s.dept}</td>
+                            <td class="p-4 text-right space-x-2">
+                                <button onclick="editStudent(${idx})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteStudent(${idx})" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+
+        function openStudentModal(editIdx = -1) {
+            document.getElementById('studentModal').classList.remove('hidden');
+            document.getElementById('studentModal').classList.add('flex');
+            document.getElementById('studentEditIndex').value = editIdx;
+
+            if (editIdx >= 0) {
+                const s = db.students[editIdx];
+                document.getElementById('sId').value = s.id;
+                document.getElementById('sName').value = s.name;
+                document.getElementById('sEmail').value = s.email;
+                document.getElementById('sDept').value = s.dept;
+                document.getElementById('studentModalTitle').innerText = "Edit Student";
+            } else {
+                document.getElementById('studentForm').reset();
+                document.getElementById('studentModalTitle').innerText = "Add New Student";
+            }
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.add('hidden');
+            document.getElementById('studentModal').classList.remove('flex');
+        }
+
+        function handleStudentSubmit(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('studentEditIndex').value);
+            const studentObj = {
+                id: document.getElementById('sId').value,
+                name: document.getElementById('sName').value,
+                email: document.getElementById('sEmail').value,
+                dept: document.getElementById('sDept').value,
+                marks: idx >= 0 ? db.students[idx].marks : 0,
+                attendance: idx >= 0 ? db.students[idx].attendance : {}
+            };
+
+            if (idx >= 0) {
+                db.students[idx] = studentObj;
+            } else {
+                db.students.push(studentObj);
+            }
+
+            saveDb();
+            closeStudentModal();
+            renderStudents();
+        }
+
+        function deleteStudent(idx) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                db.students.splice(idx, 1);
+                saveDb();
+                renderStudents();
+            }
+        }
+
+        function editStudent(idx) {
+            openStudentModal(idx);
+        }
+
+        // Course Management
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = '';
+            db.courses.forEach(c => {
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl shadow-sm border space-y-2">
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">${c.code}</span>
+                        <h4 class="font-bold text-gray-800 text-base">${c.title}</h4>
+                        <p class="text-xs text-gray-500">Credits: ${c.credits}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function openCourseModal() {
+            const code = prompt("Enter Course Code:");
+            const title = prompt("Enter Course Title:");
+            const credits = prompt("Enter Course Credits:");
+            if (code && title) {
+                db.courses.push({ code, title, credits: parseInt(credits) || 3 });
+                saveDb();
+                renderCourses();
+            }
+        }
+
+        // Attendance Tracker
+        function renderAttendance() {
+            const tbody = document.getElementById('attendanceTable');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceDate').value = today;
+
+            tbody.innerHTML = '';
+            db.students.forEach((s, i) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-4 font-semibold">${s.id}</td>
+                        <td class="p-4">${s.name}</td>
+                        <td class="p-4">
+                            <select id="att-${i}" class="border rounded p-1 text-sm">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function saveAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+            db.students.forEach((s, i) => {
+                const status = document.getElementById(`att-${i}`).value;
+                if (!s.attendance) s.attendance = {};
+                s.attendance[date] = status;
+            });
+            saveDb();
+            alert('Attendance records saved!');
+        }
+
+        // Results Section
+        function renderResults() {
+            const tbody = document.getElementById('resultsTable');
+            tbody.innerHTML = '';
+
+            db.students.forEach((s, idx) => {
+                const gpa = ((s.marks || 0) / 20).toFixed(2);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-4 font-semibold">${s.id}</td>
+                        <td class="p-4">${s.name}</td>
+                        <td class="p-4">
+                            <input type="number" id="marks-${idx}" value="${s.marks || 0}" min="0" max="100" class="border rounded w-20 p-1 text-sm">
+                        </td>
+                        <td class="p-4 font-bold text-blue-600">${gpa}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="saveResult(${idx})" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded">Save</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function saveResult(idx) {
+            const val = parseInt(document.getElementById(`marks-${idx}`).value);
+            db.students[idx].marks = val;
+            saveDb();
+            renderResults();
+        }
+
+        // Set Today's Date
+        document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
